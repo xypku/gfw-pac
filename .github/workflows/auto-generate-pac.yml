@@ -2,7 +2,7 @@ name: Auto Generate PAC File
 
 on:
   schedule:
-    - cron: '10 0 * * 4'
+    - cron: '0 13 * * 6
   push:
     paths:
       - 'gfw-pac.py'
@@ -35,8 +35,10 @@ jobs:
 
       - name: Run gfw-pac.py script
         if: env.file-exists == 'false'
-        run: ./gfw-pac.py -f gfw.pac -p "PROXY 127.0.0.1:3128" --proxy-domains=proxy-domains.txt --direct-domains=direct-domains.txt --localtld-domains=local-tlds.txt --ip-file=cidrs-cn.txt
-
+        run: |
+         ./gfw-pac.py -f gfw.pac -p "PROXY 127.0.0.1:3128" --proxy-domains=proxy-domains.txt --direct-domains=direct-domains.txt --localtld-domains=local-tlds.txt --ip-file=cidrs-cn.txt
+         ./gfw-pac.py -f gfw_home.pac -p "PROXY 192.168.4.4:7893" --proxy-domains=proxy-domains.txt --direct-domains=direct-domains.txt --localtld-domains=local-tlds.txt --ip-file=cidrs-cn.txt
+         ./gfw-pac.py -f gfw_school.pac -p "PROXY 10.0.52.66:7893" --proxy-domains=proxy-domains.txt --direct-domains=direct-domains.txt --localtld-domains=local-tlds.txt --ip-file=cidrs-cn.txt        
       - name: Commit and push changes
         if: env.file-exists == 'false'
         run: |
@@ -48,8 +50,8 @@ jobs:
           git commit -a -m "${commit_message}"
           git push
 
-      - name: Trigger Auto-Release
-        if: env.file-exists == 'false'
-        uses: benc-uk/workflow-dispatch@v1
-        with:
-          workflow: Auto Generate Release
+  #    - name: Trigger Auto-Release
+  #      if: env.file-exists == 'false'
+  #      uses: benc-uk/workflow-dispatch@v1
+  #      with:
+  #        workflow: Auto Generate Release
